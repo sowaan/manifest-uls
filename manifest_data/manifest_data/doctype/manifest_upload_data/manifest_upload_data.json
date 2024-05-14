@@ -1,0 +1,69 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-03-21 15:22:41.003168",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_index",
+  "to_index",
+  "attach_file",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "attach_file",
+   "fieldtype": "Attach",
+   "label": "Attach File"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Manifest Upload Data",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "default": "45",
+   "fieldname": "from_index",
+   "fieldtype": "Int",
+   "label": "From Index"
+  },
+  {
+   "default": "50",
+   "fieldname": "to_index",
+   "fieldtype": "Data",
+   "label": "To Index"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2024-05-14 17:00:36.426188",
+ "modified_by": "Administrator",
+ "module": "Manifest Data",
+ "name": "Manifest Upload Data",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1,
+ "track_seen": 1,
+ "track_views": 1
+}
