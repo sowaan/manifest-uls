@@ -4,25 +4,33 @@ from frappe.model.document import Document
 from frappe.utils.background_jobs import enqueue
 
 # Define the insert_data function outside of the class
+
 def insert_data(arrays, frm, to):
     for line in arrays:
         # Extract the doctype name using slicing (assuming the name is at index 45-50)
         doctype_name = "R" + line[frm:to].strip()
-        shipment_num = line[33:44].strip()
+        
         
         try:
             # Fetch the definition document based on the extracted doctype name
             definition = frappe.get_doc("Definition Manifest", doctype_name)
+            for row in definition.definitions:
+                if row.field_name == "shipment_number":
+                    shipst=row.from_index-1
+                    shipto=row.to_index
+                    break
         except frappe.DoesNotExistError:
             # If doctype_name doesn't exist in Definitions, move to the next line
             continue
-
-        # Create a new document for the current doctype
+        shipment_num = line[shipst:shipto].strip()
+        # frappe.msgprint(str(shipst)   +" "+ str(shipto))
+            # Create a new document for the current doctype
 
         ex = frappe.db.exists(doctype_name , shipment_num)
+        # frappe.msgprint(str(doctype_name)+" "+str(shipment_num))
         if ex:
             doc = frappe.get_doc(doctype_name, shipment_num)
-            print(definition,"definitions","Updating",shipment_num)
+            
             for child_record in definition.definitions:
                 field_name = child_record.field_name
                 from_index = child_record.from_index - 1
@@ -32,10 +40,11 @@ def insert_data(arrays, frm, to):
                 doc.set(field_name, field_data)
                 doc.save()
                 frappe.db.commit()
+                
         
         else:
             doc = frappe.new_doc(doctype_name)
-            print(definition,"definitions","Uploading",shipment_num)
+            
             # Iterate over each child record
             for child_record in definition.definitions:
                 field_name = child_record.field_name
@@ -48,8 +57,10 @@ def insert_data(arrays, frm, to):
                 doc.set(field_name, field_data)
 
             # Save the new document
+            
             doc.insert()
             doc.save()
+            
 
 class ManifestUploadData(Document):
     def on_submit(self):
@@ -64,6 +75,15 @@ class ManifestUploadData(Document):
             arrays = content.split('\n')
             frm = int(self.from_index)-1
             to = int(self.to_index)
+            chunk_size = 50  # Number of lines per chunk
+            current_index = 0  # Starting index for slicing the array
+
+            # Continue processing chunks until all lines are processed
+            while current_index < len(arrays):
+                # Take the next chunk of lines
+                chunk = arrays[current_index:current_index + chunk_size]                
+                # Update the current index for the next chunk
+                current_index += chunk_size
+                enqueue(insert_data, arrays=chunk,frm=frm, to=to, queue="default")
             # insert_data( arrays,frm, to)
-            enqueue(insert_data, arrays=arrays,frm=frm, to=to, queue="default")
             
