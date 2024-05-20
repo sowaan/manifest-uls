@@ -38,8 +38,8 @@ def insert_data(arrays, frm, to):
                 # Search and extract field_data from line using from_index and to_index
                 field_data = line[from_index:to_index].strip()
                 doc.set(field_name, field_data)
-                doc.save()
-                frappe.db.commit()
+            doc.save()
+            frappe.db.commit()
                 
         
         else:
